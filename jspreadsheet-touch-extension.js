@@ -1,6 +1,6 @@
 (() => {
 	if (typeof jexcel === 'undefined') jexcel = jspreadsheet;
-	// 選択用ハンドルとしてdivを作成
+	// Create a div as the selection handle
 	var handleTL = document.createElement('div');
 	var handleBR = document.createElement('div');
 	handleTL.setAttribute('id', 'handleTL');
@@ -13,7 +13,7 @@
 	handleTL.style.backgroundColor = handleBR.style.backgroundColor = 'white';
 	handleTL.style.zIndex = handleBR.style.zIndex = 9999;
 
-	// 状態を制御するため変数を定義
+	// Define variables to control the state
 	var handlesize;
 	var orginx, orginy;
 
@@ -45,6 +45,28 @@
 		handleBR.style.display = 'none';
 	}
 
+	function showContextMenuButton(e, x, y) {
+		if (jexcel.current.options.contextMenu) {
+			jexcel.timeControl_jce = setTimeout(function() {
+				if (jexcel.current && jexcel.current.contextMenu) {
+					jexcel.current.contextMenu.contextmenu.close();
+					var items = [{
+						title:'･･･',
+						onclick:function() {
+							var items = jexcel.current.options.contextMenu(jexcel.current, x, y, e);
+							jexcel.current.contextMenu.contextmenu.open(e, items);
+						}
+					}];
+					jexcel.current.contextMenu.contextmenu.open(e, items);
+					// Reduce the size of the popup
+					const div = document.getElementsByClassName('jexcel_contextmenu')[0].children[1];
+					div.style.width = 'inherit';
+					div.style.paddingLeft  = window.getComputedStyle(div).getPropertyValue('padding-right');
+				}
+			}, 1000);
+		}
+	}
+
 	function handleTouchstart(which, e) {
 		// Clear any time control
 		if (jexcel.timeControl_jce) {
@@ -69,25 +91,7 @@
 		let x = jexcel.current.selectedCell[0];
 		let y = jexcel.current.selectedCell[1];
 		showSelectionHandle();
-		if (jexcel.current.options.contextMenu) {
-			jexcel.timeControl_jce = setTimeout(function() {
-				jexcel.current.contextMenu.contextmenu.close();
-				var items = [{
-					title:'･･･',
-					onclick:function() {
-						var items = jexcel.current.options.contextMenu(jexcel.current, x, y, e);
-						jexcel.current.contextMenu.contextmenu.open(e, items);
-					}
-				}];
-				jexcel.current.contextMenu.contextmenu.open(e, items);
-				// ポップアップのサイズを小さくする
-				const div = document.getElementsByClassName('jexcel_contextmenu')[0].children[1];
-				//const divWidth = window.getComputedStyle(div).getPropertyValue('width');
-				//const padLeft = window.getComputedStyle(div).getPropertyValue('padding-left');
-				div.style.width = 'inherit';
-				div.style.paddingLeft  = window.getComputedStyle(div).getPropertyValue('padding-right');
-			}, 1000);
-		}
+		showContextMenuButton(e, x, y);
 	}
 
 	function handleTouchmove(which, e) {
@@ -143,16 +147,27 @@
 	handleBR.addEventListener('touchcancel', handleTouchend);
 	handleBR.addEventListener('touchmove', (e) => handleTouchmove('BR', e));
 
-	// 既定のイベントをカスタマイズ
+	// Customize default event handling
 	var isTouch = false;
 	var root = jexcel.current.options.root ? jexcel.current.options.root : document;
 	root.removeEventListener("touchstart", jexcel.touchStartControls);
+	root.removeEventListener("mousedown", jexcel.mouseDownControls);
 	root.addEventListener("touchstart", (e) => {
 		isTouch = true;
 		jexcel.touchStartControls(e);
-		showSelectionHandle();
+		if (jexcel.current) {
+			if (! jexcel.current.edition) {
+				showSelectionHandle();
+				var x = e.target.getAttribute('data-x');
+				var y = e.target.getAttribute('data-y');
+				if (x && y) {
+					showContextMenuButton(e, x, y);
+				}
+			}
+		} else {
+			hideSelectionHandle();
+		}
 	});
-	root.removeEventListener("mousedown", jexcel.mouseDownControls);
 	root.addEventListener("mousedown", (e) => {
 		if (!isTouch) {
 			hideSelectionHandle();
@@ -161,7 +176,15 @@
 		jexcel.mouseDownControls(e);
 	});
 
-	// ハンドルをspreadsheetの一部として追加
+	const defaultUpdateSelectionFromCoords = jexcel.current.updateSelectionFromCoords;
+	jexcel.current.updateSelectionFromCoords = function(x1, y1, x2, y2, origin) {
+		defaultUpdateSelectionFromCoords(x1, y1, x2, y2, origin);
+		if (handleTL.style.display == 'block') {
+			showSelectionHandle();
+		}
+	}
+
+	// Adding a handle as part of a spreadsheet
 	jexcel.current.content.appendChild(handleTL);
 	jexcel.current.content.appendChild(handleBR);
 	handlesize = handleTL.getBoundingClientRect().width;
