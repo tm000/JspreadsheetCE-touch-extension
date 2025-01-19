@@ -47,6 +47,11 @@
 
 	function showContextMenuButton(e, x, y) {
 		if (jexcel.current.options.contextMenu) {
+			// Clear any time control
+			if (jexcel.timeControl_jce) {
+				clearTimeout(jexcel.timeControl_jce);
+				jexcel.timeControl_jce = null;
+			}
 			jexcel.timeControl_jce = setTimeout(function() {
 				if (jexcel.current && jexcel.current.contextMenu) {
 					jexcel.current.contextMenu.contextmenu.close();
