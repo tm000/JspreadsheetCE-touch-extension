@@ -194,6 +194,6 @@
 	jexcel.current.content.appendChild(handleBR);
 	handlesize = handleTL.getBoundingClientRect().width;
 	hideSelectionHandle();
-	// コーナーの位置を保持
+	// hold corner size
 	cornerLeft = jexcel.current.headerContainer.children[0].getBoundingClientRect().left + (document.documentElement.scrollLeft || document.body.scrollLeft);
 })();
