@@ -157,33 +157,41 @@
 	var root = jexcel.current.options.root ? jexcel.current.options.root : document;
 	root.removeEventListener("touchstart", jexcel.touchStartControls);
 	root.removeEventListener("mousedown", jexcel.mouseDownControls);
+
 	root.addEventListener("touchstart", (e) => {
 		isTouch = true;
 		jexcel.touchStartControls(e);
-		if (jexcel.current) {
-			if (! jexcel.current.edition) {
-				showSelectionHandle();
-				var x = e.target.getAttribute('data-x');
-				var y = e.target.getAttribute('data-y');
-				if (x && y) {
-					showContextMenuButton(e, x, y);
-				}
+		if (jexcel.current && !jexcel.current.edition) {
+			var x = e.target.getAttribute('data-x');
+			var y = e.target.getAttribute('data-y');
+			if (x && y) {
+				showContextMenuButton(e, x, y);
 			}
-		} else {
-			hideSelectionHandle();
 		}
 	});
 	root.addEventListener("mousedown", (e) => {
 		if (!isTouch) {
 			hideSelectionHandle();
 		}
-		isTouch = false;
-		jexcel.mouseDownControls(e);
 	});
+	root.addEventListener("mousedown", jexcel.mouseDownControls);
+	root.addEventListener("mouseup", (e) => isTouch = false);
 
 	const defaultUpdateSelectionFromCoords = jexcel.current.updateSelectionFromCoords;
 	jexcel.current.updateSelectionFromCoords = function(x1, y1, x2, y2, origin) {
 		defaultUpdateSelectionFromCoords(x1, y1, x2, y2, origin);
+		if (isTouch) {
+			showSelectionHandle();
+		}
+	}
+	const defaultResetSelection = jexcel.current.resetSelection;
+	jexcel.current.resetSelection = function(blur) {
+		defaultResetSelection(blur);
+		hideSelectionHandle();
+	}
+	const defaultUpdateFreezePosition = jexcel.current.updateFreezePosition;
+	jexcel.current.updateFreezePosition = function() {
+		defaultUpdateFreezePosition();
 		if (handleTL.style.display == 'block') {
 			showSelectionHandle();
 		}
