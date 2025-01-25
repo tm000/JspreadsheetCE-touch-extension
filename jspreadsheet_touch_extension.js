@@ -1,17 +1,20 @@
 (() => {
 	if (typeof jexcel === 'undefined') jexcel = jspreadsheet;
-	// Create a div as the selection handle
-	var handleTL = document.createElement('div');
-	var handleBR = document.createElement('div');
-	handleTL.setAttribute('id', 'handleTL');
-	handleBR.setAttribute('id', 'handleBR');
-	handleTL.style.position = handleBR.style.position = 'absolute';
-	handleTL.style.width = handleBR.style.width = '30px';
-	handleTL.style.height = handleBR.style.height = '30px';
-	handleTL.style.border = handleBR.style.border = 'black 1px solid';
-	handleTL.style.borderRadius = handleBR.style.borderRadius = '30px';
-	handleTL.style.backgroundColor = handleBR.style.backgroundColor = 'white';
-	handleTL.style.zIndex = handleBR.style.zIndex = 9999;
+	// Create a div as the selection & resize handle
+	var selHandleTL = document.createElement('div');
+	var selHandleBR = document.createElement('div');
+	var rszHandle = document.createElement('div');
+	selHandleTL.setAttribute('id', 'selHandleTL');
+	selHandleBR.setAttribute('id', 'selHandleBR');
+	rszHandle.setAttribute('id', 'rszHandle');
+	selHandleTL.style.position = selHandleBR.style.position = rszHandle.style.position = 'absolute';
+	selHandleTL.style.width = selHandleBR.style.width = rszHandle.style.width = '30px';
+	selHandleTL.style.height = selHandleBR.style.height = rszHandle.style.height = '30px';
+	selHandleTL.style.border = selHandleBR.style.border = 'black 1px solid';
+	selHandleTL.style.borderRadius = selHandleBR.style.borderRadius = '30px';
+	selHandleTL.style.backgroundColor = selHandleBR.style.backgroundColor = 'white';
+	rszHandle.style.border = 'none';
+	selHandleTL.style.zIndex = selHandleBR.style.zIndex = rszHandle.style.zIndex = 9999;
 
 	// Define variables to control the state
 	var handlesize;
@@ -28,21 +31,50 @@
 		let infoTL = cellTL.getBoundingClientRect();
 		let infoBR = cellBR.getBoundingClientRect();
 		if (cornerCell.left >= 0) {
-			handleTL.style.left = (infoTL.left - cornerCell.left - handlesize / 2) + 'px';
-			handleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
+			selHandleTL.style.left = (infoTL.left - cornerCell.left - handlesize / 2) + 'px';
+			selHandleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
 		} else {
-			handleTL.style.left = (infoTL.left + scrollLeft - cornerLeft - handlesize / 2) + 'px';
-			handleBR.style.left = (infoBR.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+			selHandleTL.style.left = (infoTL.left + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+			selHandleBR.style.left = (infoBR.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
 		}
-		handleTL.style.top = (infoTL.top - cornerCell.top + scrollTop - handlesize / 2) + 'px';
-		handleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
-		handleTL.style.display = 'block';
-		handleBR.style.display = 'block';
+		selHandleTL.style.top = (infoTL.top - cornerCell.top + scrollTop - handlesize / 2) + 'px';
+		selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
+		selHandleTL.style.display = 'block';
+		selHandleBR.style.display = 'block';
 	}
 
-	function hideSelectionHandle() {
-		handleTL.style.display = 'none';
-		handleBR.style.display = 'none';
+	function showResizeHandle() {
+		if (!jexcel.current.selectedCell) return;
+		let cornerCell = jexcel.current.headerContainer.children[0].getBoundingClientRect();
+		let headerHeight = jexcel.current.headerContainer.getBoundingClientRect().height;
+		const scrollTop = jexcel.current.content.scrollTop;
+		const scrollLeft = jexcel.current.content.scrollLeft + (document.documentElement.scrollLeft || document.body.scrollLeft);
+
+		if (jexcel.current.selectedRow && jexcel.current.selectedCell[1] == jexcel.current.selectedCell[3]) {
+			let cell = jexcel.current.getCellFromCoords(0, jexcel.current.selectedRow);
+			let info = cell.getBoundingClientRect();
+			rszHandle.style.left = ((cornerCell.width - handlesize) / 2) + 'px';
+			rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
+			rszHandle.classList.add('rotate90');
+			rszHandle.style.display = 'block';
+		} else if (jexcel.current.selectedHeader && jexcel.current.selectedCell[0] == jexcel.current.selectedCell[2]) {
+			let cell = jexcel.current.getCellFromCoords(jexcel.current.selectedHeader, 0);
+			let info = cell.getBoundingClientRect();
+			if (cornerCell.left >= 0) {
+				rszHandle.style.left = (info.right - cornerCell.left - handlesize / 2) + 'px';
+			} else {
+				rszHandle.style.left = (info.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+			}
+			rszHandle.style.top = (Math.max(headerHeight - handlesize, 0) + scrollTop) + 'px';
+			rszHandle.classList.remove('rotate90');
+			rszHandle.style.display = 'block';
+		}
+	}
+
+	function hideHandles() {
+		selHandleTL.style.display = 'none';
+		selHandleBR.style.display = 'none';
+		rszHandle.style.display = 'none';
 	}
 
 	function showContextMenuButton(e, x, y) {
@@ -72,7 +104,7 @@
 		}
 	}
 
-	function handleTouchstart(which, e) {
+	function selHandleTouchstart(which, e) {
 		// Clear any time control
 		if (jexcel.timeControl_jce) {
 			clearTimeout(jexcel.timeControl_jce);
@@ -91,15 +123,14 @@
 		jexcel.isMouseAction = true;
 	}
 
-	function handleTouchend(e) {
-		jexcel.isMouseAction = false;
+	function selHandleTouchend(e) {
 		let x = jexcel.current.selectedCell[0];
 		let y = jexcel.current.selectedCell[1];
 		showSelectionHandle();
 		showContextMenuButton(e, x, y);
 	}
 
-	function handleTouchmove(which, e) {
+	function selHandleTouchmove(which, e) {
 		hideSelectionHandle();
 		let col1 = jexcel.current.selectedCell[0];
 		let row1 = jexcel.current.selectedCell[1];
@@ -143,14 +174,112 @@
 		jexcel.current.updateSelectionFromCoords(col1, row1, col2, row2);
 		e.preventDefault();
 	}
-	handleTL.addEventListener('touchstart', (e) => handleTouchstart('TL', e));
-	handleTL.addEventListener('touchend', handleTouchend);
-	handleTL.addEventListener('touchcancel', handleTouchend);
-	handleTL.addEventListener('touchmove', (e) =>  handleTouchmove('TL', e));
-	handleBR.addEventListener('touchstart', (e) => handleTouchstart('BR', e));
-	handleBR.addEventListener('touchend', handleTouchend);
-	handleBR.addEventListener('touchcancel', handleTouchend);
-	handleBR.addEventListener('touchmove', (e) => handleTouchmove('BR', e));
+	selHandleTL.addEventListener('touchstart', (e) => selHandleTouchstart('TL', e));
+	selHandleTL.addEventListener('touchend', selHandleTouchend);
+	selHandleTL.addEventListener('touchcancel', selHandleTouchend);
+	selHandleTL.addEventListener('touchmove', (e) =>  selHandleTouchmove('TL', e));
+	selHandleBR.addEventListener('touchstart', (e) => selHandleTouchstart('BR', e));
+	selHandleBR.addEventListener('touchend', selHandleTouchend);
+	selHandleBR.addEventListener('touchcancel', selHandleTouchend);
+	selHandleBR.addEventListener('touchmove', (e) => selHandleTouchmove('BR', e));
+
+	function rszHandleTouchStart(e) {
+		let touch = e.touches[0];
+		if (jexcel.current.selectedRow) {
+			let rowId = jexcel.current.selectedRow;
+			let cell = jexcel.current.getCellFromCoords(0, rowId);
+			let info = cell.getBoundingClientRect();
+			// Resize helper
+			jexcel.current.resizing = {
+				element: cell.parentNode,
+				mousePosition: touch.clientY,
+				row: rowId,
+				height: info.height,
+			};
+			// Border indication
+			cell.parentNode.classList.add('resizing');
+		} else if (jexcel.current.selectedHeader) {
+			let columnId = jexcel.current.selectedHeader;
+			let cell = jexcel.current.getCellFromCoords(columnId, 0);
+			let info = cell.getBoundingClientRect();
+			// Resize helper
+			jexcel.current.resizing = {
+				mousePosition: touch.clientX,
+				column: columnId,
+				width: info.width,
+			};
+			// Border indication
+			jexcel.current.headers[columnId].classList.add('resizing');
+			for (var i = 0; i < jexcel.current.records.length; i++) {
+				if (jexcel.current.records[i][columnId]) {
+					jexcel.current.records[i][columnId].classList.add('resizing');
+				}
+			}			
+		}
+
+		jexcel.isMouseAction = true;
+	}
+
+	function rszHandleTouchend(e) {
+		jexcel.isMouseAction = false;
+	}
+
+	function rszHandleTouchmove(e) {
+		if (jexcel.current) {
+			// Resizing is ongoing
+			if (jexcel.current.resizing) {
+				let touch = e.touches[0];
+				let cornerCell = jexcel.current.headerContainer.children[0].getBoundingClientRect();
+				let headerHeight = jexcel.current.headerContainer.getBoundingClientRect().height;
+				const scrollTop = jexcel.current.content.scrollTop;
+				const scrollLeft = jexcel.current.content.scrollLeft + (document.documentElement.scrollLeft || document.body.scrollLeft);
+				if (jexcel.current.resizing.column) {
+					var width = touch.clientX - jexcel.current.resizing.mousePosition;
+
+					if (jexcel.current.resizing.width + width > 0) {
+						var tempWidth = jexcel.current.resizing.width + width;
+						jexcel.current.colgroup[jexcel.current.resizing.column].setAttribute('width', tempWidth);
+
+						jexcel.current.updateCornerPosition();
+						let cell = jexcel.current.getCellFromCoords(jexcel.current.selectedHeader, 0);
+						let info = cell.getBoundingClientRect();
+						if (cornerCell.left >= 0) {
+							rszHandle.style.left = (info.right - cornerCell.left - handlesize / 2) + 'px';
+						} else {
+							rszHandle.style.left = (info.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+						}
+					}
+				} else {
+					var height = touch.clientY - jexcel.current.resizing.mousePosition;
+
+					if (jexcel.current.resizing.height + height > 0) {
+						var tempHeight = jexcel.current.resizing.height + height;
+						jexcel.current.rows[jexcel.current.resizing.row].setAttribute('height', tempHeight);
+						jexcel.current.rows[jexcel.current.resizing.row].style.height = '';
+
+						jexcel.current.updateCornerPosition();
+						let cell = jexcel.current.getCellFromCoords(0, jexcel.current.selectedRow);
+						let info = cell.getBoundingClientRect();
+						rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
+					}
+				}
+				let cellBR = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[2], jexcel.current.selectedCell[3]);
+				let infoBR = cellBR.getBoundingClientRect();
+				if (cornerCell.left >= 0) {
+					selHandleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
+				} else {
+					selHandleBR.style.left = (infoBR.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+				}
+				selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
+				e.preventDefault();
+			}
+		}
+	}
+
+	rszHandle.addEventListener('touchstart', rszHandleTouchStart);
+	rszHandle.addEventListener('touchend', rszHandleTouchend);
+	rszHandle.addEventListener('touchcancel', rszHandleTouchend);
+	rszHandle.addEventListener('touchmove', rszHandleTouchmove);
 
 	// Customize default event handling
 	var isTouch = false;
@@ -171,37 +300,40 @@
 	});
 	root.addEventListener("mousedown", (e) => {
 		if (!isTouch) {
-			hideSelectionHandle();
+			hideHandles();
 		}
 	});
 	root.addEventListener("mousedown", jexcel.mouseDownControls);
-	root.addEventListener("mouseup", (e) => isTouch = false);
-
-	const defaultUpdateSelectionFromCoords = jexcel.current.updateSelectionFromCoords;
-	jexcel.current.updateSelectionFromCoords = function(x1, y1, x2, y2, origin) {
-		defaultUpdateSelectionFromCoords(x1, y1, x2, y2, origin);
+	root.addEventListener("mouseup", (e) => {
 		if (isTouch) {
 			showSelectionHandle();
+			if ((jexcel.current.options.columnResize == true && jexcel.current.selectedHeader) ||
+				(jexcel.current.options.rowResize == true && jexcel.current.selectedRow)) {
+				showResizeHandle();
+			}
 		}
-	}
+		isTouch = false;
+	});
+
 	const defaultResetSelection = jexcel.current.resetSelection;
 	jexcel.current.resetSelection = function(blur) {
 		defaultResetSelection(blur);
-		hideSelectionHandle();
+		hideHandles();
 	}
 	const defaultUpdateFreezePosition = jexcel.current.updateFreezePosition;
 	jexcel.current.updateFreezePosition = function() {
 		defaultUpdateFreezePosition();
-		if (handleTL.style.display == 'block') {
+		if (selHandleTL.style.display == 'block') {
 			showSelectionHandle();
 		}
 	}
 
 	// Adding a handle as part of a spreadsheet
-	jexcel.current.content.appendChild(handleTL);
-	jexcel.current.content.appendChild(handleBR);
-	handlesize = handleTL.getBoundingClientRect().width;
-	hideSelectionHandle();
+	jexcel.current.content.appendChild(rszHandle);
+	jexcel.current.content.appendChild(selHandleTL);
+	jexcel.current.content.appendChild(selHandleBR);
+	handlesize = selHandleTL.getBoundingClientRect().width;
+	hideHandles();
 	// hold corner size
 	cornerLeft = jexcel.current.headerContainer.children[0].getBoundingClientRect().left + (document.documentElement.scrollLeft || document.body.scrollLeft);
 })();
