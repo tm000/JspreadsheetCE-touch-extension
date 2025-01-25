@@ -6,6 +6,7 @@ The JspreadsheetCE-touch-extension is a Javascript plugin designed to enhance th
 The following enhancements are made for touch interaction with Jspreadsheet CE:
 * **Selectable Cell Range**: Allows users to select a range of cells using touch gestures.
 * **Context Menu Button**: Displays a button to show the context menu when cells are selected, enabling context menu display even on Mobile Safari.
+* **Resize Column Width And Row Height**: Allows users to change column widths and row heights using touch gestures.
 
 ![alt Handles for changing cell selection](images/image1.avif "Handles for changing cell selection")
 
@@ -14,6 +15,14 @@ The following enhancements are made for touch interaction with Jspreadsheet CE:
 ![alt A button to display the context menu appears.](images/image3.avif "A button to display the context menu appears.")
 
 ![alt The context menu appears.](images/image4.avif "The context menu appears.")
+
+![alt Select a column header to display the resize icon.](images/image5.avif "Select a column header to display the resize icon.")
+
+![alt Moving it sideways changes the column width.](images/image6.avif "Moving it sideways changes the column width.")
+
+![alt Select a row header to display the resize icon.](images/image7.avif "Select a row header to display the resize icon.")
+
+![alt Moving it up or down will change the row height.](images/image8.avif "Moving it up or down will change the row height.")
 
 # System Requirements
 This extension has been tested and is compatible with the following environments:
