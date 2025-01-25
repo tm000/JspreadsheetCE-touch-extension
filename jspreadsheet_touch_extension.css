@@ -1,0 +1,11 @@
+#rszHandle::after {
+    content: ' ';
+    display: block;
+    width: 30px;
+    height: 30px;
+    background-color: dimgray;
+    clip-path: path("M 26 13 L 22 13 L 22 17 L 26 17 L 24 19 L 25 20 L 30 15 L 25 10 L 24 11 Z M 4 17 L 8 17 L 8 13 L 4 13 L 6 11 L 5 10 L 0 15 L 5 20 L 6 19 Z M 10 0 L 10 30 L 13 30 L 13 0 Z M 17 0 L 17 30 L 20 30 L 20 0 Z");
+}
+.rotate90 {
+    transform: rotate(90deg);
+}
