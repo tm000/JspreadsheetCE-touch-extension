@@ -305,7 +305,7 @@
 	});
 	root.addEventListener("mousedown", jexcel.mouseDownControls);
 	root.addEventListener("mouseup", (e) => {
-		if (isTouch) {
+		if (isTouch && jexcel.current) {
 			showSelectionHandle();
 			if ((jexcel.current.options.columnResize == true && jexcel.current.selectedHeader) ||
 				(jexcel.current.options.rowResize == true && jexcel.current.selectedRow)) {
