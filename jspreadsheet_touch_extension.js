@@ -131,7 +131,7 @@
 	}
 
 	function selHandleTouchmove(which, e) {
-		hideSelectionHandle();
+		hideHandles();
 		let col1 = jexcel.current.selectedCell[0];
 		let row1 = jexcel.current.selectedCell[1];
 		let col2 = jexcel.current.selectedCell[2];
