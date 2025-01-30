@@ -17,14 +17,14 @@
 	selHandleTL.style.zIndex = selHandleBR.style.zIndex = rszHandle.style.zIndex = 9999;
 
 	// Define variables to control the state
-	var handlesize;
 	var orginx, orginy;
 
 	function showSelectionHandle() {
 		if (!jexcel.current.selectedCell) return;
 		let cornerCell = jexcel.current.headerContainer.children[0].getBoundingClientRect();
+		let contentRect = jexcel.current.content.getBoundingClientRect();
 		const scrollTop = jexcel.current.content.scrollTop;
-		const scrollLeft = jexcel.current.content.scrollLeft + (document.documentElement.scrollLeft || document.body.scrollLeft);
+		const scrollLeft = jexcel.current.content.scrollLeft;
 
 		let cellTL = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[0], jexcel.current.selectedCell[1]);
 		let cellBR = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[2], jexcel.current.selectedCell[3]);
@@ -34,8 +34,8 @@
 			selHandleTL.style.left = (infoTL.left - cornerCell.left - handlesize / 2) + 'px';
 			selHandleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
 		} else {
-			selHandleTL.style.left = (infoTL.left + scrollLeft - cornerLeft - handlesize / 2) + 'px';
-			selHandleBR.style.left = (infoBR.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+			selHandleTL.style.left = (infoTL.left + scrollLeft - contentRect.left - handlesize / 2) + 'px';
+			selHandleBR.style.left = (infoBR.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 		}
 		selHandleTL.style.top = (infoTL.top - cornerCell.top + scrollTop - handlesize / 2) + 'px';
 		selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
@@ -46,9 +46,10 @@
 	function showResizeHandle() {
 		if (!jexcel.current.selectedCell) return;
 		let cornerCell = jexcel.current.headerContainer.children[0].getBoundingClientRect();
+		let contentRect = jexcel.current.content.getBoundingClientRect();
 		let headerHeight = jexcel.current.headerContainer.getBoundingClientRect().height;
 		const scrollTop = jexcel.current.content.scrollTop;
-		const scrollLeft = jexcel.current.content.scrollLeft + (document.documentElement.scrollLeft || document.body.scrollLeft);
+		const scrollLeft = jexcel.current.content.scrollLeft;
 
 		if (jexcel.current.selectedRow && jexcel.current.selectedCell[1] == jexcel.current.selectedCell[3]) {
 			let cell = jexcel.current.getCellFromCoords(0, jexcel.current.selectedRow);
@@ -63,9 +64,9 @@
 			if (cornerCell.left >= 0) {
 				rszHandle.style.left = (info.right - cornerCell.left - handlesize / 2) + 'px';
 			} else {
-				rszHandle.style.left = (info.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+				rszHandle.style.left = (info.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 			}
-			rszHandle.style.top = (Math.max(headerHeight - handlesize, 0) + scrollTop) + 'px';
+			rszHandle.style.top = scrollTop + 'px';
 			rszHandle.classList.remove('rotate90');
 			rszHandle.style.display = 'block';
 		}
@@ -80,11 +81,11 @@
 	function showContextMenuButton(e, x, y) {
 		if (jexcel.current.options.contextMenu) {
 			// Clear any time control
-			if (jexcel.timeControl_jce) {
-				clearTimeout(jexcel.timeControl_jce);
-				jexcel.timeControl_jce = null;
+			if (jexcel.timeControl_tex) {
+				clearTimeout(jexcel.timeControl_tex);
+				jexcel.timeControl_tex = null;
 			}
-			jexcel.timeControl_jce = setTimeout(function() {
+			jexcel.timeControl_tex = setTimeout(function() {
 				if (jexcel.current && jexcel.current.contextMenu) {
 					jexcel.current.contextMenu.contextmenu.close();
 					var items = [{
@@ -106,9 +107,9 @@
 
 	function selHandleTouchstart(which, e) {
 		// Clear any time control
-		if (jexcel.timeControl_jce) {
-			clearTimeout(jexcel.timeControl_jce);
-			jexcel.timeControl_jce = null;
+		if (jexcel.timeControl_tex) {
+			clearTimeout(jexcel.timeControl_tex);
+			jexcel.timeControl_tex = null;
 		}
 		if (jexcel.current.options.contextMenu) {
 			jexcel.current.contextMenu.contextmenu.close();
@@ -214,7 +215,7 @@
 				if (jexcel.current.records[i][columnId]) {
 					jexcel.current.records[i][columnId].classList.add('resizing');
 				}
-			}			
+			}
 		}
 
 		jexcel.isMouseAction = true;
@@ -231,8 +232,9 @@
 				let touch = e.touches[0];
 				let cornerCell = jexcel.current.headerContainer.children[0].getBoundingClientRect();
 				let headerHeight = jexcel.current.headerContainer.getBoundingClientRect().height;
+				let contentRect = jexcel.current.content.getBoundingClientRect();
 				const scrollTop = jexcel.current.content.scrollTop;
-				const scrollLeft = jexcel.current.content.scrollLeft + (document.documentElement.scrollLeft || document.body.scrollLeft);
+				const scrollLeft = jexcel.current.content.scrollLeft;
 				if (jexcel.current.resizing.column) {
 					var width = touch.clientX - jexcel.current.resizing.mousePosition;
 
@@ -246,7 +248,7 @@
 						if (cornerCell.left >= 0) {
 							rszHandle.style.left = (info.right - cornerCell.left - handlesize / 2) + 'px';
 						} else {
-							rszHandle.style.left = (info.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+							rszHandle.style.left = (info.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 						}
 					}
 				} else {
@@ -268,7 +270,7 @@
 				if (cornerCell.left >= 0) {
 					selHandleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
 				} else {
-					selHandleBR.style.left = (infoBR.right + scrollLeft - cornerLeft - handlesize / 2) + 'px';
+					selHandleBR.style.left = (infoBR.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 				}
 				selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
 				e.preventDefault();
@@ -298,6 +300,12 @@
 			}
 		}
 	});
+	root.addEventListener("touchend", (e) => {
+		if (jexcel.current && !jexcel.current.edition) {
+			// For when mouse events do not occur and only touch events occur
+			showSelectionHandle();
+		}
+	});
 	root.addEventListener("mousedown", (e) => {
 		if (!isTouch) {
 			hideHandles();
@@ -305,7 +313,7 @@
 	});
 	root.addEventListener("mousedown", jexcel.mouseDownControls);
 	root.addEventListener("mouseup", (e) => {
-		if (isTouch && jexcel.current) {
+		if (isTouch && jexcel.current && !jexcel.current.edition) {
 			showSelectionHandle();
 			if ((jexcel.current.options.columnResize == true && jexcel.current.selectedHeader) ||
 				(jexcel.current.options.rowResize == true && jexcel.current.selectedRow)) {
@@ -327,6 +335,25 @@
 			showSelectionHandle();
 		}
 	}
+	const defaultOpenEditor = jexcel.current.openEditor;
+	jexcel.current.openEditor = function(cell, empty, e) {
+		// Clear any time control
+		if (jexcel.timeControl_tex) {
+			clearTimeout(jexcel.timeControl_tex);
+			jexcel.timeControl_tex = null;
+		}
+		if (jexcel.current.options.contextMenu) {
+			jexcel.current.contextMenu.contextmenu.close();
+		}
+		defaultOpenEditor(cell, empty, e);
+	}
+	const defaultScrollControls = jexcel.current.scrollControls;
+	jexcel.current.scrollControls = function(e) {
+		if (!rszHandle.classList.contains('rotate90')) {
+			rszHandle.style.top = jexcel.current.content.scrollTop + 'px';
+		}
+		defaultScrollControls(e);
+	}
 
 	// Adding a handle as part of a spreadsheet
 	jexcel.current.content.appendChild(rszHandle);
@@ -334,6 +361,4 @@
 	jexcel.current.content.appendChild(selHandleBR);
 	handlesize = selHandleTL.getBoundingClientRect().width;
 	hideHandles();
-	// hold corner size
-	cornerLeft = jexcel.current.headerContainer.children[0].getBoundingClientRect().left + (document.documentElement.scrollLeft || document.body.scrollLeft);
 })();
