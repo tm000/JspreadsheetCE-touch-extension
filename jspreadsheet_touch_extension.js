@@ -26,8 +26,14 @@
 		const scrollTop = jexcel.current.content.scrollTop;
 		const scrollLeft = jexcel.current.content.scrollLeft;
 
-		let cellTL = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[0], jexcel.current.selectedCell[1]);
-		let cellBR = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[2], jexcel.current.selectedCell[3]);
+		// Get visible column ID ignoring hidden columns
+		let col1 = parseInt(jexcel.current.selectedCell[0]);
+		let col2 = parseInt(jexcel.current.selectedCell[2]);
+		while (jexcel.current.cols[col1].colElement.style.display == 'none') col1++;
+		while (jexcel.current.cols[col2].colElement.style.display == 'none') col2--;
+
+		let cellTL = jexcel.current.getCellFromCoords(col1, jexcel.current.selectedCell[1]);
+		let cellBR = jexcel.current.getCellFromCoords(col2, jexcel.current.selectedCell[3]);
 		let infoTL = cellTL.getBoundingClientRect();
 		let infoBR = cellBR.getBoundingClientRect();
 		if (cornerCell.left >= 0) {
@@ -52,7 +58,11 @@
 		const scrollLeft = jexcel.current.content.scrollLeft;
 
 		if (jexcel.current.selectedRow && jexcel.current.selectedCell[1] == jexcel.current.selectedCell[3]) {
-			let cell = jexcel.current.getCellFromCoords(0, jexcel.current.selectedRow);
+			// Get visible column ID ignoring hidden columns
+			let col = 0;
+			while (jexcel.current.cols[col].colElement.style.display == 'none') col++;
+
+			let cell = jexcel.current.getCellFromCoords(col, jexcel.current.selectedRow);
 			let info = cell.getBoundingClientRect();
 			rszHandle.style.left = ((cornerCell.width - handlesize) / 2) + 'px';
 			rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
@@ -260,12 +270,20 @@
 						jexcel.current.rows[jexcel.current.resizing.row].style.height = '';
 
 						jexcel.current.updateCornerPosition();
-						let cell = jexcel.current.getCellFromCoords(0, jexcel.current.selectedRow);
+						// Get visible column ID ignoring hidden columns
+						let col = 0;
+						while (jexcel.current.colgroup[col].style.display == 'none') col++;
+
+			                        let cell = jexcel.current.getCellFromCoords(col, jexcel.current.selectedRow);
 						let info = cell.getBoundingClientRect();
 						rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
 					}
 				}
-				let cellBR = jexcel.current.getCellFromCoords(jexcel.current.selectedCell[2], jexcel.current.selectedCell[3]);
+				// Get visible column ID ignoring hidden columns
+				let col = parseInt(jexcel.current.selectedCell[2]);
+				while (jexcel.current.colgroup[col].style.display == 'none') col++;
+
+		                let cellBR = jexcel.current.getCellFromCoords(col, jexcel.current.selectedCell[3]);
 				let infoBR = cellBR.getBoundingClientRect();
 				if (cornerCell.left >= 0) {
 					selHandleBR.style.left = (infoBR.right - cornerCell.left - handlesize / 2) + 'px';
