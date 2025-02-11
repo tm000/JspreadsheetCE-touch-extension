@@ -26,11 +26,11 @@
 		const scrollTop = jexcel.current.content.scrollTop;
 		const scrollLeft = jexcel.current.content.scrollLeft;
 
-		// Get visible column ID ignoring hidden columns
+		// Get visible column ID excluding hidden columns
 		let col1 = parseInt(jexcel.current.selectedCell[0]);
 		let col2 = parseInt(jexcel.current.selectedCell[2]);
-		while (jexcel.current.cols[col1].colElement.style.display == 'none') col1++;
-		while (jexcel.current.cols[col2].colElement.style.display == 'none') col2--;
+		while (jexcel.current.colgroup[col1].style.display == 'none') col1++;
+		while (jexcel.current.colgroup[col2].style.display == 'none') col2--;
 
 		let cellTL = jexcel.current.getCellFromCoords(col1, jexcel.current.selectedCell[1]);
 		let cellBR = jexcel.current.getCellFromCoords(col2, jexcel.current.selectedCell[3]);
@@ -43,8 +43,8 @@
 			selHandleTL.style.left = (infoTL.left + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 			selHandleBR.style.left = (infoBR.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 		}
-		selHandleTL.style.top = (infoTL.top - cornerCell.top + scrollTop - handlesize / 2) + 'px';
-		selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
+		selHandleTL.style.top = (infoTL.top - contentRect.top + scrollTop - handlesize / 2) + 'px';
+		selHandleBR.style.top = (infoBR.bottom - contentRect.top + scrollTop - handlesize / 2) + 'px';
 		selHandleTL.style.display = 'block';
 		selHandleBR.style.display = 'block';
 	}
@@ -58,14 +58,14 @@
 		const scrollLeft = jexcel.current.content.scrollLeft;
 
 		if (jexcel.current.selectedRow && jexcel.current.selectedCell[1] == jexcel.current.selectedCell[3]) {
-			// Get visible column ID ignoring hidden columns
+			// Get visible column ID excluding hidden columns
 			let col = 0;
-			while (jexcel.current.cols[col].colElement.style.display == 'none') col++;
+			while (jexcel.current.colgroup[col].style.display == 'none') col++;
 
 			let cell = jexcel.current.getCellFromCoords(col, jexcel.current.selectedRow);
 			let info = cell.getBoundingClientRect();
 			rszHandle.style.left = ((cornerCell.width - handlesize) / 2) + 'px';
-			rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
+			rszHandle.style.top = (info.bottom- contentRect.top + scrollTop - handlesize / 2) + 'px';
 			rszHandle.classList.add('rotate90');
 			rszHandle.style.display = 'block';
 		} else if (jexcel.current.selectedHeader && jexcel.current.selectedCell[0] == jexcel.current.selectedCell[2]) {
@@ -270,16 +270,16 @@
 						jexcel.current.rows[jexcel.current.resizing.row].style.height = '';
 
 						jexcel.current.updateCornerPosition();
-						// Get visible column ID ignoring hidden columns
+						// Get visible column ID excluding hidden columns
 						let col = 0;
 						while (jexcel.current.colgroup[col].style.display == 'none') col++;
 
-			                        let cell = jexcel.current.getCellFromCoords(col, jexcel.current.selectedRow);
+						let cell = jexcel.current.getCellFromCoords(col, jexcel.current.selectedRow);
 						let info = cell.getBoundingClientRect();
-						rszHandle.style.top = (info.bottom- cornerCell.top + scrollTop - handlesize / 2) + 'px';
+						rszHandle.style.top = (info.bottom- contentRect.top + scrollTop - handlesize / 2) + 'px';
 					}
 				}
-				// Get visible column ID ignoring hidden columns
+				// Get visible column ID excluding hidden columns
 				let col = parseInt(jexcel.current.selectedCell[2]);
 				while (jexcel.current.colgroup[col].style.display == 'none') col++;
 
@@ -290,7 +290,7 @@
 				} else {
 					selHandleBR.style.left = (infoBR.right + scrollLeft - contentRect.left - handlesize / 2) + 'px';
 				}
-				selHandleBR.style.top = (infoBR.bottom - cornerCell.top + scrollTop - handlesize / 2) + 'px';
+				selHandleBR.style.top = (infoBR.bottom - contentRect.top + scrollTop - handlesize / 2) + 'px';
 				e.preventDefault();
 			}
 		}
@@ -373,7 +373,7 @@
 		defaultScrollControls(e);
 	}
 
-	// Adding a handle as part of a spreadsheet
+	// Add handles as part of a spreadsheet
 	jexcel.current.content.appendChild(rszHandle);
 	jexcel.current.content.appendChild(selHandleTL);
 	jexcel.current.content.appendChild(selHandleBR);
