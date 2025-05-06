@@ -5,31 +5,98 @@ The JspreadsheetCE-touch-extension is a Javascript plugin designed to enhance th
 # Features
 The following enhancements are made for touch interaction with Jspreadsheet CE:
 * **Selectable Cell Range**: Allows users to select a range of cells using touch gestures.
-* **Context Menu Button**: Displays a button to show the context menu when cells are selected, enabling context menu display even on Mobile Safari.
+
+  ![alt Handles for changing cell selection](images/image1.png "Handles for changing cell selection")
+
+  ![alt Expand Selection](images/image2.png "Expand Selection")
+
+* **Context Menu Display**: Allows users to show the context menu when cells are selected even on Mobile Safari. There are three ways to display the context menu:
+  1. **Simple Context Menu Display**  
+   When a cell is selected, the context menu is displayed.
+
+     ![alt When a cell is selected, the context menu is displayed.](images/image3.png "When a cell is selected, the context menu is displayed.")
+
+  2. **Button-triggered Context Menu Display**  
+   When a cell is selected, a button appears that allows the user to display the context menu.
+  
+     ![alt A button to display the context menu appears.](images/image4.png "A button to display the context menu appears.")
+
+     ![alt The context menu appears.](images/image5.png "The context menu appears.")
+
+  3. **Icon Panel Display**  
+   When a cell is selected, an icon panel is displayed instead of the context menu.
+
+     ![alt An icon panel is displayed instead of the context menu.](images/image6.png "An icon panel is displayed instead of the context menu.")
+
 * **Resize Column Width And Row Height**: Allows users to change column widths and row heights using touch gestures.
 
-![alt Handles for changing cell selection](images/image1.avif "Handles for changing cell selection")
+  ![alt Select a column header to display the resize icon.](images/image7.png "Select a column header to display the resize icon.")
 
-![alt Expand Selection](images/image2.avif "Expand Selection")
+  ![alt Moving it sideways changes the column width.](images/image8.png "Moving it sideways changes the column width.")
 
-![alt A button to display the context menu appears.](images/image3.avif "A button to display the context menu appears.")
+  ![alt Select a row header to display the resize icon.](images/image9.png "Select a row header to display the resize icon.")
 
-![alt The context menu appears.](images/image4.avif "The context menu appears.")
-
-![alt Select a column header to display the resize icon.](images/image5.avif "Select a column header to display the resize icon.")
-
-![alt Moving it sideways changes the column width.](images/image6.avif "Moving it sideways changes the column width.")
-
-![alt Select a row header to display the resize icon.](images/image7.avif "Select a row header to display the resize icon.")
-
-![alt Moving it up or down will change the row height.](images/image8.avif "Moving it up or down will change the row height.")
+  ![alt Moving it up or down will change the row height.](images/image10.png "Moving it up or down will change the row height.")
 
 # System Requirements
 This extension has been tested and is compatible with the following environments:
 * Operating System: Windows 11 Pro 23H2
-* Jspreadsheet CE Version: v.4.3.0
+* Jspreadsheet CE Version: v.5.0.0
 * Browsers:
-  * Google Chrome: Version 131.0.6778.86 (Official Build) (64-bit)
-  * Microsoft Edge: 131.0.2903.86 (64-bit)
-  * Firefox: 128.5.1esr (64-bit)
+  * Google Chrome: Version 135.0.7049.115 (Official Build) (64-bit)
+  * Microsoft Edge: 136.0.3240.50 (64-bit)
+  * Firefox: 128.9.0esr (64-bit)
   * Mobile Safari: 18.2.1
+
+# Usage
+Load the necessary files:
+```html
+<script src="./jspreadsheet_touch_extension.js"></script>
+<link rel="stylesheet" href="./jspreadsheet_touch_extension.css" type="text/css" />
+```
+
+If you use an icon panel, include the Material Icons.
+```html
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_column_left" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_column_right" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=cell_merge" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit_square" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=sort" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=segment" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_row_above" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_row_below" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=variable_remove" />
+```
+
+Specify the plugin in jspreadsheet:
+```javascript
+jspreadsheet(document.getElementById('spreadsheet'), {
+    ...
+    plugins: { touchPlugin: touchPlugin.plugin },
+});
+```
+
+# Options
+Several options can be configured:
+```javascript
+plugins: {
+    touchPlugin: touchPlugin.options({
+        contextMenuMode: 'icon',
+		contextMenuShowDelay: 500,
+		iconSize: 32,
+		handleSize: 30,
+		selectionHandleColor: 'white',
+		selectionHandleBorder: 'black 1px solid'
+    }).plugin,
+}
+```
+
+| Option | Description | Default Value |
+|----------|-------------|------|
+| contextMenuMode | How to display a context menu | 'normal, 'expand', 'icon'（default） |
+| contextMenuShowDelay | The time it takes for the context menu to appear after selecting a cell | 500 (ms) |
+| iconSize | Icon panel icon size | 32 (px) |
+| handleSize | Size of the handles for selecting cells and for changing row height and column width | 30 (px) |
+| selectionHandleColor | Cell selection handle color | white |
+| selectionHandleBorder | Cell selection handle border | black 1px solid |
