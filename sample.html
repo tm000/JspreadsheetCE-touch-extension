@@ -2,41 +2,75 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-	<script src="https://jsuites.net/v4/jsuites.js"></script>
-	<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
-	<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://bossanova.uk/jspreadsheet/v5/jspreadsheet.js"></script>
+	<script src="https://jsuites.net/v5/jsuites.js"></script>
+	<script src="./jspreadsheet_touch_extension.js"></script>
+	<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v5/jspreadsheet.css" type="text/css" />
+	<link rel="stylesheet" href="https://jsuites.net/v5/jsuites.css" type="text/css" />
 	<link rel="stylesheet" href="./jspreadsheet_touch_extension.css" type="text/css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_column_left" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_column_right" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=cell_merge" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit_square" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=sort" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=segment" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_row_above" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_row_below" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=variable_remove" />
 </head>
 <body>
 	<div id="spreadsheet" style="margin:50px"></div>
 	<script>
 	var data = [
 		['Jazz', 'Honda', '2019-02-12', '', true, '$ 2.000,00'],
-		['Civic', 'Honda', '2018-07-11', '', true, '$ 4.000,01'],
-	];
-	for (let i=0; i< 100; i++) data.push([]);
+		['Civic', 'Honda', '2018-07-11', '', true, '$ 4.000,01'],];
+	var data2 = [
+		['Jazz', 'Honda', '2019-02-12', '', true, '$ 2.000,00'],
+		['Civic', 'Honda', '2018-07-11', '', true, '$ 4.000,01'],];
 	jspreadsheet(document.getElementById('spreadsheet'), {
-		data: data,
-		columns: [
-			{ type: 'text', title:'A', width:120 },
-			{ type: 'text', title:'B', width:120 },
-			{ type: 'text', title:'C', width:120 },
-			{ type: 'text', title:'D', width:120 },
-			{ type: 'text', title:'E', width:120 },
-			{ type: 'text', title:'F', width:120 },
-			{ type: 'text', title:'G', width:120 },
-			{ type: 'text', title:'H', width:120 },
-			{ type: 'text', title:'I', width:120 },
+		worksheets: [
+			{
+				data: data,
+				toolbar: true,
+				minDimensions: [6,6],
+				columns: [
+					{ title: 'A', type: 'text', width: '150px' },
+					{ title: 'B', type: 'text', width: '150px' },
+					{ title: 'C', type: 'text', width: '150px' },
+					{ title: 'D', type: 'text', width: '150px' },
+					{ title: 'E', type: 'text', width: '150px' },
+					{ title: 'F', type: 'text', width: '150px' },
+				],
+				tableOverflow:true,
+				tableHeight:'600px',
+				tableWidth:'800px',
+				freezeColumns: 2,
+				fullscreen:false,
+				rowResize:true,
+				includeHeadersOnCopy:1,
+			},
+			{
+				data: data2,
+				minDimensions: [6,6],
+				columns: [
+					{ title: 'A', type: 'text', width: '150px' },
+					{ title: 'B', type: 'text', width: '120px' },
+					{ title: 'C', type: 'calendar', width: '150px', format:'YYYY-MM-DD' },
+					{ title: 'D', type: 'dropdown', width: '100px', source:['No','Yes'] },
+					{ title: 'E', type: 'checkbox', width: '80px' },
+					{ title: 'F', type: 'numeric', width: '150px', mask: '$ #.##,00', decimal: ',' },
+				],
+				freezeColumns: 2,
+			}
 		],
-		tableOverflow:true,
-		tableHeight:'600px',
-		tableWidth:'1000px',
-		freezeColumns: 2,
-		fullscreen:false,
-		rowResize:true,
+		//contextMenu: myContextmenu,
+		plugins: {
+			touchPlugin: touchPlugin.plugin,
+		},
 	});
 	</script>
-	<script src="./jspreadsheet_touch_extension.js"></script>
 </body>
 </html>
