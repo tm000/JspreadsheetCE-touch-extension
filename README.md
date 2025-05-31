@@ -73,7 +73,7 @@ Specify the plugin in jspreadsheet:
 ```javascript
 jspreadsheet(document.getElementById('spreadsheet'), {
     ...
-    plugins: { touchPlugin: touchPlugin.plugin },
+    plugins: { touchPlugin: touchPlugin.plugin() },
 });
 ```
 
@@ -81,14 +81,14 @@ jspreadsheet(document.getElementById('spreadsheet'), {
 Several options can be configured:
 ```javascript
 plugins: {
-    touchPlugin: touchPlugin.options({
+    touchPlugin: touchPlugin.plugin({
 		contextMenuMode: 'icon',
 		contextMenuShowDelay: 500,
 		iconSize: 32,
 		handleSize: 30,
 		selectionHandleColor: 'white',
 		selectionHandleBorder: 'black 1px solid'
-    }).plugin,
+    }),
 }
 ```
 
