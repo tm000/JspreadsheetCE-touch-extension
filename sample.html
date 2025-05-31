@@ -68,14 +68,14 @@
 		],
 		//contextMenu: myContextmenu,
 		plugins: {
-			touchPlugin: touchPlugin.options({
+			touchPlugin: touchPlugin.plugin({
 				contextMenuMode: 'icon',	// normal, expand, icon
 				contextMenuShowDelay: 500,
 				iconSize: 32,
 				handleSize: 30,
 				selectionHandleColor: 'white',
 				selectionHandleBorder: 'black 1px solid',
-			}).plugin,
+			}),
 		},
 	});
 	</script>
