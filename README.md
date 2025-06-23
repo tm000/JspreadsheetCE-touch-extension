@@ -82,7 +82,7 @@ Several options can be configured:
 <script>
 	touchExtension.setup(jspreadsheet(document.getElementById('spreadsheet'), {
 	  ...
-	}){
+	}), {
 		contextMenuMode: 'icon',	// normal, expand, icon
 		iconSize: 32,
 		handleSize: 30,
