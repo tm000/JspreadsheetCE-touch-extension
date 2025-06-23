@@ -51,13 +51,14 @@ This extension has been tested and is compatible with the following environments
 # Usage
 Load the necessary files:
 ```html
-<link rel="stylesheet" href="./jspreadsheet_touch_extension.css" type="text/css" />
-...
-jspreadsheet(document.getElementById('spreadsheet'), {
-  ...
-}
-...
 <script src="./jspreadsheet_touch_extension.js"></script>
+<link rel="stylesheet" href="./jspreadsheet_touch_extension.css" type="text/css" />
+```
+Call the setup method by specifying jspreadsheet as the first argument.
+```html
+touchExtension.setup(jspreadsheet(document.getElementById('spreadsheet'), {
+  ...
+}))
 ```
 
 If you use an icon panel, include the Material Icons.
@@ -79,13 +80,15 @@ Several options can be configured:
 ```javascript
 <script src="./jspreadsheet_touch_extension.js"></script>
 <script>
-	touchExtension.options({
-			contextMenuMode: 'icon',	// normal, expand, icon
-			iconSize: 32,
-			handleSize: 30,
-			selectionHandleColor: 'white',
-			selectionHandleBorder: 'black 1px solid',
-		});
+	touchExtension.setup(jspreadsheet(document.getElementById('spreadsheet'), {
+	  ...
+	}){
+		contextMenuMode: 'icon',	// normal, expand, icon
+		iconSize: 32,
+		handleSize: 30,
+		selectionHandleColor: 'white',
+		selectionHandleBorder: 'black 1px solid',
+	});
 </script>
 ```
 
